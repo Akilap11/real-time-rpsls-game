@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+.instructions {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.instructions h3 {
+    color: #555;
+}
+
+.instructions ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.instructions li {
+    margin: 5px 0;
+    color: #666;
+}
+
+.video-container {
+    margin-top: 20px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #333;
+    border-radius: 5px;
+}

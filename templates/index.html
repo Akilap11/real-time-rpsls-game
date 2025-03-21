@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Rock Paper Scissors Game</h1>
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <p>Show your gesture in the green rectangle when the countdown hits 0:</p>
+            <ul>
+                <li><strong>Rock:</strong> Make a fist</li>
+                <li><strong>Paper:</strong> Open hand</li>
+                <li><strong>Scissors:</strong> Show 2 fingers</li>
+            </ul>
+        </div>
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" alt="Video Feed" id="video-feed">
+            <div id="error-message" style="display: none; color: red;">
+                Failed to load video feed. Please ensure your webcam is connected and browser permissions are granted.
+            </div>
+        </div>
+    </div>
+    <script>
+    
+        const videoFeed = document.getElementById('video-feed');
+        const errorMessage = document.getElementById('error-message');
+
+        videoFeed.onerror = function() {
+            errorMessage.style.display = 'block';
+            videoFeed.style.display = 'none';
+        };
+    </script>
+</body>
+</html>
