@@ -1,4 +1,4 @@
-```markdown
+
 # Setting Up and Running a Flask Application
 
 Follow these steps to set up and run a Flask application in your project:
