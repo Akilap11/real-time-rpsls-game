@@ -1,5 +1,5 @@
 
-# Setting Up and Running a Flask Application
+# Setting Up and Running a CGV GAME Application
 
 Follow these steps to set up and run a Flask application in your project:
 
