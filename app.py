@@ -96,6 +96,22 @@ def debug_images():
     except Exception as e:
         logger.error(f"Error getting debug images: {e}")
         return jsonify({'error': 'Failed to get debug images'}), 500
+    
+@app.route('/game_history')
+def game_history():
+    """Return the game history as JSON."""
+    global game
+    if game is None:
+        return jsonify({'error': 'Game not initialized'}), 500
+
+    try:
+        with game_lock:
+            history = list(game.game_history) 
+        return jsonify({'history': history})
+    except Exception as e:
+        logger.error(f"Error getting game history: {e}")
+        return jsonify({'error': 'Failed to get game history'}), 500
+
 
 @app.teardown_appcontext
 def cleanup(exception=None):

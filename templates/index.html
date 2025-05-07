@@ -87,11 +87,10 @@
         <section class="game-history">
             <h2><i class="fas fa-history"></i> Game History</h2>
             <div class="history-list" id="history-list">
-                <div class="history-item">
-                    <span>Game will start soon...</span>
-                </div>
-            </div>
-        </section>
+              
+                <div id="game-history"></div>
+              </div>
+          </section>
 
         <div class="debug-panel">
             <h3>Image Processing Steps</h3>
@@ -310,6 +309,32 @@
                 })
                 .catch(error => console.error('Error fetching debug images:', error));
         }
+
+        function fetchGameHistory() {
+    try {
+        fetch('/game_history')
+            .then(response => response.json())
+            .then(data => {
+                if (data.history) {
+                    const historyElement = document.getElementById('game-history');
+                    historyElement.innerHTML = '<h3>Game History</h3>';
+
+                    data.history.forEach(entry => {
+                        const historyItem = document.createElement('p');
+                        historyItem.textContent = entry;
+                        historyElement.appendChild(historyItem);
+                    });
+                } else {
+                    console.error('Error fetching game history:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+setInterval(fetchGameHistory, 5000); // Fetch every 5 seconds
         
         // Initialize the game
         function initGame() {

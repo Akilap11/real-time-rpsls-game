@@ -435,3 +435,32 @@
     text-align: center;
     max-width: 80%;
   }
+
+  /* Game History Section */
+#game-history .history-item {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+#game-history .history-item:last-child {
+  border-bottom: none;
+}
+
+.history-result-win {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.history-result-lose {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.history-result-draw {
+  color: var(--highlight-color);
+  font-weight: bold;
+}
