@@ -11,12 +11,12 @@
     <div class="container">
         <header>
             <h1>Rock Paper Scissors</h1>
-            <p>Show your gesture in the camera when the countdown hits 0!</p>
+            <p>Show your gesture in the camera when ready!</p>
         </header>
 
         <section class="instructions">
             <h2><i class="fas fa-book"></i> How to Play</h2>
-            <p>Position your hand in the green rectangle area and make your gesture when the countdown hits zero.</p>
+            <p>Position your hand in the green rectangle area and make your gesture after clicking PLAY.</p>
             
             <div class="gesture-guide">
                 <div class="gesture-card">
@@ -46,6 +46,7 @@
                         Failed to load video feed. Please ensure your webcam is connected and browser permissions are granted.
                     </div>
                 </div>
+                <button id="play-button" class="play-button">PLAY</button>
             </div>
             
             <div class="info-panel">
@@ -60,13 +61,8 @@
                     </div>
                 </div>
                 
-                <div class="countdown-display">
-                    <h3>Ready in</h3>
-                    <div class="countdown-value" id="countdown">3</div>
-                </div>
-                
                 <div class="game-result" id="game-result">
-                    <div class="result-text" id="result-text">Get ready to play!</div>
+                    <div class="result-text" id="result-text">Click PLAY to start!</div>
                 </div>
                 
                 <div class="choices-display">
@@ -86,22 +82,12 @@
 
         <section class="game-history">
             <h2><i class="fas fa-history"></i> Game History</h2>
-            <div class="history-list" id="history-list">
-              
-                <div id="game-history"></div>
-              </div>
-          </section>
+            <div class="history-list" id="history-list"></div>
+        </section>
 
         <div class="debug-panel">
             <h3>Image Processing Steps</h3>
-            <div class="debug-images" id="debug-images">
-                <!-- Debug images will be dynamically added here -->
-            </div>
-        </div>
-
-        <div class="extension-notice">
-            <h3>Coming Soon!</h3>
-            <p>Rock, Paper, Scissors, Lizard, Spock extension from The Big Bang Theory!</p>
+            <div class="debug-images" id="debug-images"></div>
         </div>
 
         <footer>
@@ -110,13 +96,11 @@
     </div>
 
     <script>
-        // DOM Elements
         const videoFeed = document.getElementById('video-feed');
         const errorMessage = document.getElementById('error-message');
         const loadingSpinner = document.getElementById('loading-spinner');
         const playerScoreElement = document.getElementById('player-score');
         const computerScoreElement = document.getElementById('computer-score');
-        const countdownElement = document.getElementById('countdown');
         const resultText = document.getElementById('result-text');
         const gameResult = document.getElementById('game-result');
         const playerChoiceIcon = document.getElementById('player-choice-icon');
@@ -125,12 +109,8 @@
         const computerChoiceLabel = document.getElementById('computer-choice');
         const historyList = document.getElementById('history-list');
         const debugImages = document.getElementById('debug-images');
+        const playButton = document.getElementById('play-button');
 
-        // Game state
-        let playerScore = 0;
-        let computerScore = 0;
-        
-        // Choice icons mapping
         const choiceIcons = {
             'rock': '✊',
             'paper': '✋',
@@ -138,72 +118,27 @@
             'waiting': '❓'
         };
 
-        // Handle video loading
-        videoFeed.onload = function() {
-            loadingSpinner.style.display = 'none';
-        };
-
-        videoFeed.onerror = function() {
+        videoFeed.onload = () => loadingSpinner.style.display = 'none';
+        videoFeed.onerror = () => {
             errorMessage.style.display = 'block';
             loadingSpinner.style.display = 'none';
             videoFeed.style.display = 'none';
         };
 
-        // Function to update the game state
-        function updateGameState() {
-            // This function would ideally receive updates from the backend
-            // For demonstration, we'll simulate with WebSocket or periodic fetch
-            // For now, we'll leave this as a placeholder for future implementation
+        function startGame() {
+            fetch('/play_game', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultText.textContent = "Show your gesture in the green box!";
+                        updateChoices('waiting', 'waiting');
+                        playButton.disabled = true;
+                        setTimeout(() => pollGameState(), 500);
+                    }
+                })
+                .catch(error => console.error('Error starting game:', error));
         }
 
-        // Function to update the history
-        function addHistoryItem(playerChoice, computerChoice, result) {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            
-            let resultClass = '';
-            if (result.includes('Win')) {
-                resultClass = 'history-result-win';
-            } else if (result.includes('Computer')) {
-                resultClass = 'history-result-lose';
-            } else {
-                resultClass = 'history-result-draw';
-            }
-            
-            historyItem.innerHTML = `
-                <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
-                <span class="${resultClass}">${result}</span>
-            `;
-            
-            historyList.insertBefore(historyItem, historyList.firstChild);
-            
-            // Limit history items
-            if (historyList.children.length > 5) {
-                historyList.removeChild(historyList.lastChild);
-            }
-        }
-
-        // Function to display the result with animation
-        function displayResult(result) {
-            gameResult.className = 'game-result animated';
-            
-            if (result.includes('Win')) {
-                gameResult.classList.add('highlight');
-                resultText.style.color = 'var(--secondary-color)';
-            } else if (result.includes('Computer')) {
-                resultText.style.color = 'var(--accent-color)';
-            } else {
-                resultText.style.color = 'var(--highlight-color)';
-            }
-            
-            resultText.textContent = result;
-            
-            setTimeout(() => {
-                gameResult.classList.remove('animated');
-            }, 500);
-        }
-
-        // Function to update choices display
         function updateChoices(playerChoice, computerChoice) {
             playerChoiceIcon.textContent = choiceIcons[playerChoice] || choiceIcons.waiting;
             computerChoiceIcon.textContent = choiceIcons[computerChoice] || choiceIcons.waiting;
@@ -212,83 +147,88 @@
             computerChoiceLabel.textContent = computerChoice ? computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1) : 'Waiting...';
         }
 
-        // Function to update debug images
-        function updateDebugImages(images) {
-            // This would be populated with actual debug images from the backend
-            // For now we'll leave it empty
+        function displayResult(result, playerChoice, computerChoice) {
+            gameResult.className = 'game-result animated';
+            
+            if (result.includes('Win!')) {
+                resultText.style.color = '#4CAF50';
+            } else if (result.includes('Computer Wins!')) {
+                resultText.style.color = '#F44336';
+            } else {
+                resultText.style.color = '#2196F3';
+            }
+            
+            resultText.textContent = result;
+            updateChoices(playerChoice, computerChoice);
+            
+            setTimeout(() => {
+                gameResult.classList.remove('animated');
+                playButton.disabled = false;
+            }, 500);
         }
-        
-        // Function to poll for game state updates
+
+        function updateHistory(history) {
+            historyList.innerHTML = '';
+            
+            history.forEach(item => {
+                const parts = item.split(', ');
+                if (parts.length >= 3) {
+                    const playerChoice = parts[0].replace('You: ', '');
+                    const computerChoice = parts[1].replace('Comp: ', '');
+                    const result = parts[2];
+                    
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    let resultClass = 'history-result-draw';
+                    if (result.includes('Win!')) {
+                        resultClass = 'history-result-win';
+                    } else if (result.includes('Computer Wins!')) {
+                        resultClass = 'history-result-lose';
+                    }
+                    
+                    historyItem.innerHTML = `
+                        <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
+                        <span class="${resultClass}">${result}</span>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                }
+            });
+        }
+
         function pollGameState() {
             fetch('/game_state')
                 .then(response => response.json())
                 .then(data => {
-                    // Update scores
                     playerScoreElement.textContent = data.player_score;
                     computerScoreElement.textContent = data.computer_score;
                     
-                    // Update countdown
-                    countdownElement.textContent = data.countdown;
-                    
-                    // Update choices if available
-                    if (data.player_choice && data.computer_choice) {
-                        updateChoices(data.player_choice, data.computer_choice);
+                    if (data.showing_result && data.player_choice && data.computer_choice) {
+                        displayResult(data.result, data.player_choice, data.computer_choice);
+                    } else if (data.waiting_for_gesture) {
+                        resultText.textContent = "Show your gesture in the green box!";
+                        updateChoices('waiting', 'waiting');
+                        setTimeout(() => pollGameState(), 500);
+                    } else if (data.waiting_for_play) {
+                        resultText.textContent = "Click PLAY to start!";
+                        playButton.disabled = false;
                     }
                     
-                    // Update result if available
-                    if (data.result) {
-                        displayResult(data.result);
-                    }
-                    
-                    // Update history
-                    if (data.history && data.history.length > 0) {
-                        // Clear current history first
-                        while (historyList.firstChild) {
-                            historyList.removeChild(historyList.firstChild);
-                        }
-                        
-                        // Add history items
-                        data.history.forEach(item => {
-                            const parts = item.split(', ');
-                            if (parts.length >= 3) {
-                                const playerChoice = parts[0].replace('You: ', '');
-                                const computerChoice = parts[1].replace('Comp: ', '');
-                                const result = parts[2];
-                                
-                                const historyItem = document.createElement('div');
-                                historyItem.className = 'history-item';
-                                
-                                let resultClass = '';
-                                if (result.includes('Win')) {
-                                    resultClass = 'history-result-win';
-                                } else if (result.includes('Computer')) {
-                                    resultClass = 'history-result-lose';
-                                } else {
-                                    resultClass = 'history-result-draw';
-                                }
-                                
-                                historyItem.innerHTML = `
-                                    <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
-                                    <span class="${resultClass}">${result}</span>
-                                `;
-                                
-                                historyList.appendChild(historyItem);
-                            }
-                        });
-                    }
+                    updateHistory(data.history);
                 })
-                .catch(error => console.error('Error polling game state:', error));
+                .catch(error => {
+                    console.error('Error polling game state:', error);
+                    setTimeout(() => pollGameState(), 1000);
+                });
         }
         
-        // Function to fetch and display debug images
         function fetchDebugImages() {
             fetch('/debug_images')
                 .then(response => response.json())
                 .then(data => {
-                    // Clear current debug images
                     debugImages.innerHTML = '';
                     
-                    // Add each debug image
                     for (const [name, base64Image] of Object.entries(data)) {
                         const imgContainer = document.createElement('div');
                         imgContainer.className = 'debug-image-container';
@@ -309,44 +249,14 @@
                 })
                 .catch(error => console.error('Error fetching debug images:', error));
         }
-
-        function fetchGameHistory() {
-    try {
-        fetch('/game_history')
-            .then(response => response.json())
-            .then(data => {
-                if (data.history) {
-                    const historyElement = document.getElementById('game-history');
-                    historyElement.innerHTML = '<h3>Game History</h3>';
-
-                    data.history.forEach(entry => {
-                        const historyItem = document.createElement('p');
-                        historyItem.textContent = entry;
-                        historyElement.appendChild(historyItem);
-                    });
-                } else {
-                    console.error('Error fetching game history:', data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-setInterval(fetchGameHistory, 5000); // Fetch every 5 seconds
         
-        // Initialize the game
         function initGame() {
-            // Initial setup
             updateChoices('waiting', 'waiting');
-            
-            // Start polling for game state and debug images
-            setInterval(pollGameState, 500);
             setInterval(fetchDebugImages, 1000);
+            pollGameState();
         }
         
-        // Call init when document is ready
+        playButton.addEventListener('click', startGame);
         document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
