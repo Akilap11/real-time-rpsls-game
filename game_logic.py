@@ -5,7 +5,6 @@ from collections import deque
 import logging
 import time
 import base64
-from collections import deque, Counter
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -290,51 +289,36 @@ class RockPaperScissors:
                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                           
     def _handle_game_logic(self, frame, mask):
-        """Handle game logic based on recent gesture consistency."""
+        """Handle game logic based on current state."""
         current_time = time.time()
         
-
-        if not hasattr(self, 'recent_gestures'):
-            self.recent_gestures = deque(maxlen=5)
-
+        # Only detect gestures when waiting for player input
         if self.waiting_for_gesture:
+            # Detect player's gesture
             detected_gesture = self.detect_hand_gesture(frame, GESTURE_AREA, mask)
-
-            # Append gesture (or None) to history
-            self.recent_gestures.append(detected_gesture)
-
-            logger.debug(f"Recent gestures: {list(self.recent_gestures)}")
-
-
-            # Count consistent gestures in recent frames
-            if len(self.recent_gestures) == self.recent_gestures.maxlen:
-                counts = Counter(self.recent_gestures)
-                most_common, freq = counts.most_common(1)[0]
-
-                if most_common and freq >= 4:
-                    self.player_choice = most_common
-                    self.computer_choice = random.choice(choices)
-                    self.result = self.determine_winner(self.player_choice, self.computer_choice)
-
-                    # Update scores
-                    if self.result == "You Win!":
-                        self.player_score += 1
-                    elif self.result == "Computer Wins!":
-                        self.computer_score += 1
-
-                    # Log history
-                    self.game_history.append(
-                        f"You: {self.player_choice}, Comp: {self.computer_choice}, {self.result}"
-                    )
-
-                    # Reset state
-                    self.waiting_for_gesture = False
-                    self.showing_result = True
-                    self.result_timestamp = current_time
-                    self.recent_gestures.clear()
-
-        # After showing result, reset to waiting
-        if self.showing_result and (current_time - self.result_timestamp) > 3:
+            
+            if detected_gesture:
+                self.player_choice = detected_gesture
+                self.computer_choice = random.choice(choices)
+                self.result = self.determine_winner(self.player_choice, self.computer_choice)
+                
+                # Update scores
+                if self.result == "You Win!":
+                    self.player_score += 1
+                elif self.result == "Computer Wins!":
+                    self.computer_score += 1
+                
+                # Record game history
+                history_entry = f"You: {self.player_choice}, Comp: {self.computer_choice}, {self.result}"
+                self.game_history.append(history_entry)
+                
+                # Switch to showing result state
+                self.waiting_for_gesture = False
+                self.showing_result = True
+                self.result_timestamp = current_time
+        
+        # Auto-switch to waiting for play after showing result for a while
+        if self.showing_result and current_time - self.result_timestamp > 3:
             self.showing_result = False
             self.waiting_for_play = True
     
@@ -344,5 +328,3 @@ class RockPaperScissors:
             self.cap.release()
             logger.debug("Camera resources released")
         self.is_running = False
-
-    
