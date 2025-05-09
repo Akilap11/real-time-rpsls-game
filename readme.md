@@ -121,7 +121,7 @@ Each frame from the webcam is processed through the following steps (visualized 
 cgv-game/
 │
 ├── app.py                # Main Flask server and video stream
-├── rps_game.py           # Game logic, gesture detection, and image processing
+├── game_Logic.py           # Game logic, gesture detection, and image processing
 ├── templates/
 │   └── index.html        # Web UI template
 ├── static/
@@ -149,7 +149,7 @@ cgv-game/
 | Problem                    | Solution                                                                 |
 |----------------------------|--------------------------------------------------------------------------|
 | Webcam not detected        | Use `cv2.VideoCapture(1)` if `cv2.VideoCapture(0)` doesn't work.         |
-| Gesture detection fails    | Ensure good lighting and adjust HSV thresholds in `rps_game.py`.         |
+| Gesture detection fails    | Ensure good lighting and adjust HSV thresholds in `game_Logic.py`.         |
 | Flask server won't start   | Make sure Flask is installed and no other app is using port 5000.        |
 | Browser can't connect      | Try [http://localhost:5000](http://localhost:5000).                      |
 | Performance lag            | Reduce webcam resolution or simplify image processing pipeline.          |
