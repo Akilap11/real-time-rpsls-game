@@ -225,15 +225,16 @@ header p {
 }
 
 .gesture-guide {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 20px;
+  display: grid;
+/* 5 columns on large screens, down to 1 on a very small viewport */
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));  
+gap: 1rem;
+margin: 2rem 0;
 }
 
 .gesture-card {
   text-align: center;
+
   background-color: var(--light-color);
   border-radius: 10px;
   padding: 15px;
