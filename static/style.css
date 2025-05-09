@@ -464,3 +464,28 @@
   color: var(--highlight-color);
   font-weight: bold;
 }
+
+.play-button {
+  display: block;
+  margin: 30px auto;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.play-button:hover {
+  background-color: #27ae60;
+  transform: scale(1.05);
+}
+
+.play-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
