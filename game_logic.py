@@ -22,13 +22,17 @@ class RockPaperScissors:
         
         self.player_score = 0
         self.computer_score = 0
-        self.countdown = 3
-        self.last_countdown = 0
         self.game_history = deque(maxlen=MAX_HISTORY)
         self.player_choice = None
         self.computer_choice = None
         self.result = None
         self.is_running = True
+        
+        # Game state variables
+        self.waiting_for_play = True
+        self.waiting_for_gesture = False
+        self.showing_result = False
+        self.result_timestamp = 0
         
         # Store processing steps for visualization
         self.processing_images = {}
@@ -62,7 +66,7 @@ class RockPaperScissors:
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
         self.processing_images['hsv'] = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
         
-        # Define range for skin color detection (in HSV)
+        # Define range for skin color detection
         lower_skin = np.array([0, 20, 70], dtype=np.uint8)
         upper_skin = np.array([20, 255, 255], dtype=np.uint8)
         
@@ -179,6 +183,32 @@ class RockPaperScissors:
             _, buffer = cv2.imencode('.jpg', resized)
             debug_images[name] = base64.b64encode(buffer).decode('utf-8')
         return debug_images
+    
+    def play_game(self):
+        """Start a new game round with computer's choice."""
+        logger.debug("Starting new game round")
+        self.waiting_for_play = False
+        self.waiting_for_gesture = True
+        self.showing_result = False
+        self.player_choice = None
+        # Make computer's choice immediately when play is clicked
+        self.computer_choice = random.choice(choices)
+        logger.debug(f"Computer chose: {self.computer_choice}")
+        self.result = None
+        
+    def get_game_state(self):
+        """Return current game state as dictionary."""
+        return {
+            'player_score': self.player_score,
+            'computer_score': self.computer_score,
+            'player_choice': self.player_choice,
+            'computer_choice': self.computer_choice if self.showing_result else None,
+            'result': self.result,
+            'waiting_for_play': self.waiting_for_play,
+            'waiting_for_gesture': self.waiting_for_gesture,
+            'showing_result': self.showing_result,
+            'history': list(self.game_history)
+        }
 
     def generate_frame(self):
         """Generate a processed frame for display."""
@@ -208,34 +238,37 @@ class RockPaperScissors:
         x, y, w, h = GESTURE_AREA
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         
-        # Detect player's gesture
-        self.player_choice = self.detect_hand_gesture(frame, GESTURE_AREA, mask)
+        # Handle gameplay logic
+        self._handle_game_logic(frame, mask)
         
         # Display game information on frame
         self._display_game_info(frame)
-        
-        # Handle game logic
-        self._handle_game_logic()
         
         # Encode the frame for streaming
         _, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         
-        logger.debug("Frame generated successfully")
         return frame_bytes
         
     def _display_game_info(self, frame):
         """Display game information on the frame."""
-        # Display countdown
-        cv2.putText(frame, f"Time: {self.countdown}", (10, 50), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        # Display game state
+        if self.waiting_for_play:
+            cv2.putText(frame, "Press PLAY to start", (10, 50), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        elif self.waiting_for_gesture:
+            cv2.putText(frame, "Show your gesture in the green box", (10, 50), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        elif self.showing_result:
+            cv2.putText(frame, "Result shown! Press PLAY to continue", (10, 50), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
         
         # Display scores
         cv2.putText(frame, f"Score - You: {self.player_score} Computer: {self.computer_score}", 
                    (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         
-        # Display detected gesture
-        if self.player_choice:
+        # Display detected gesture if available
+        if self.player_choice and not self.waiting_for_play:
             cv2.putText(frame, f"Detected: {self.player_choice}", (10, 110), 
                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                        
@@ -248,36 +281,50 @@ class RockPaperScissors:
                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         
         # Display current game result if available
-        if self.result:
+        if self.showing_result and self.result:
             for i, text in enumerate([f"Computer: {self.computer_choice}", 
                                    f"You: {self.player_choice}", 
                                    f"Result: {self.result}"]):
                 cv2.putText(frame, text, (10, 170+i*30), 
                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
                           
-    def _handle_game_logic(self):
-        """Handle game countdown and logic."""
+    def _handle_game_logic(self, frame, mask):
+        """Handle game logic based on current state."""
         current_time = time.time()
-        if self.last_countdown == 0:
-            self.last_countdown = current_time
-
-        # Update countdown
-        if self.countdown <= 0:
-            self.computer_choice = random.choice(choices)
-            if self.player_choice:
+        
+        # Only detect gestures when waiting for player input
+        if self.waiting_for_gesture:
+            # Detect player's gesture
+            detected_gesture = self.detect_hand_gesture(frame, GESTURE_AREA, mask)
+            
+            if detected_gesture:
+                self.player_choice = detected_gesture
+                self.computer_choice = random.choice(choices)
                 self.result = self.determine_winner(self.player_choice, self.computer_choice)
+                
+                # Update scores
                 if self.result == "You Win!":
                     self.player_score += 1
                 elif self.result == "Computer Wins!":
                     self.computer_score += 1
                 
+                # Record game history
                 history_entry = f"You: {self.player_choice}, Comp: {self.computer_choice}, {self.result}"
                 self.game_history.append(history_entry)
-            else:
-                self.result = "No gesture detected!"
                 
-            self.countdown = 3
-            time.sleep(1.5)  # Pause to show result
-        elif current_time - self.last_countdown >= 1:
-            self.countdown -= 1
-            self.last_countdown = current_time
+                # Switch to showing result state
+                self.waiting_for_gesture = False
+                self.showing_result = True
+                self.result_timestamp = current_time
+        
+        # Auto-switch to waiting for play after showing result for a while
+        if self.showing_result and current_time - self.result_timestamp > 3:
+            self.showing_result = False
+            self.waiting_for_play = True
+    
+    def release(self):
+        """Release camera resources."""
+        if self.cap and self.cap.isOpened():
+            self.cap.release()
+            logger.debug("Camera resources released")
+        self.is_running = False
