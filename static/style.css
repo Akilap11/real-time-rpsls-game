@@ -489,3 +489,10 @@
   background-color: #bdc3c7;
   cursor: not-allowed;
 }
+
+.history-empty {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    margin-top: 10px;
+}
