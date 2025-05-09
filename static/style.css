@@ -57,7 +57,7 @@ header p {
 .video-panel {
   flex: 1;
   min-width: 320px;
-  background-color: #fff;
+  background-color: #181818;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -87,7 +87,7 @@ header p {
   flex: 1;
   min-width: 320px;
   padding: 25px;
-  background-color: #fff;
+  background-color: #181818;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
@@ -211,7 +211,7 @@ header p {
 }
 
 .instructions {
-  background-color: #fff;
+  background-color: #181818;
   border-radius: 15px;
   padding: 25px;
   margin-bottom: 30px;
@@ -257,7 +257,7 @@ header p {
 }
 
 .game-history {
-  background-color: #fff;
+  background-color: #181818;
   border-radius: 15px;
   padding: 25px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -276,7 +276,7 @@ header p {
 
 .history-item {
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #181818;
   display: flex;
   justify-content: space-between;
 }
