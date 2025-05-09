@@ -522,5 +522,20 @@ footer {
   color: #999;
   font-style: italic;
   text-align: center;
-  margin-top: 10px;
+}
+
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+  height: 500px;
+}
+
+.parallax-image {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 80%;
+  height: auto;
+  will-change: transform;
 }
