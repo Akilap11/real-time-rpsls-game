@@ -1,9 +1,9 @@
 /* Modern color scheme */
 :root {
-  --primary-color: #3498db;
+  --primary-color: #5664fc;
   --secondary-color: #2ecc71;
   --dark-color: #daecff;
-  --light-color: #484848;
+  --light-color: #212121;
   --accent-color: #e74c3c;
   --highlight-color: #0f78f1;
   --background-color: #272727;
@@ -478,27 +478,39 @@ footer {
 
 .play-button {
   display: block;
-  margin: 30px auto;
-  padding: 12px 30px;
+  margin: 80px auto;
+  padding: 14px 120px;
   font-size: 1.2rem;
-  font-weight: bold;
-  background-color: var(--primary-color);
+  font-weight: 600;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 50px;
   cursor: pointer;
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
 }
 
 .play-button:hover {
-  background-color: #27ae60;
-  transform: scale(1.05);
+  background: linear-gradient(
+    135deg,
+    var(--secondary-color),
+    var(--primary-color)
+  );
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
 .play-button:disabled {
-  background-color: #bdc3c7;
+  background: #dcdde1;
+  color: #7f8c8d;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .history-empty {
