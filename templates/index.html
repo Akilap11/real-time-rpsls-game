@@ -172,7 +172,15 @@
 
         function updateHistory(history) {
             historyList.innerHTML = '';
-            
+
+            if (history.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'history-empty';
+                emptyMessage.textContent = 'No games played yet. Click PLAY to start!';
+                historyList.appendChild(emptyMessage);
+                return;
+            }
+
             history.forEach(item => {
                 const parts = item.split(', ');
                 if (parts.length >= 3) {
