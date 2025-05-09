@@ -1,353 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rock Paper Scissors Game</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    />
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Rock Paper Scissors</h1>
-            <p>Show your gesture in the camera when the countdown hits 0!</p>
-        </header>
+      <header>
+        <h1>Rock Paper Scissors</h1>
+        <h3>Show your gesture in the camera when ready!</h3>
+      </header>
 
-        <section class="instructions">
-            <h2><i class="fas fa-book"></i> How to Play</h2>
-            <p>Position your hand in the green rectangle area and make your gesture when the countdown hits zero.</p>
-            
-            <div class="gesture-guide">
-                <div class="gesture-card">
-                    <div class="gesture-icon">✊</div>
-                    <h3>Rock</h3>
-                    <p>Make a fist with your hand</p>
-                </div>
-                <div class="gesture-card">
-                    <div class="gesture-icon">✋</div>
-                    <h3>Paper</h3>
-                    <p>Show an open hand with fingers extended</p>
-                </div>
-                <div class="gesture-card">
-                    <div class="gesture-icon">✌️</div>
-                    <h3>Scissors</h3>
-                    <p>Show two fingers (index and middle)</p>
-                </div>
-            </div>
-        </section>
+      <section class="instructions">
+        <h2><i class="fas fa-book"></i> How to Play</h2>
+        <p>
+          Position your hand in the green rectangle area and make your gesture
+          after clicking PLAY.
+        </p>
 
-        <div class="game-section">
-            <div class="video-panel">
-                <div class="video-container">
-                    <img src="{{ url_for('video_feed') }}" alt="Video Feed" id="video-feed">
-                    <div class="spinner" id="loading-spinner"></div>
-                    <div id="error-message" style="display: none;">
-                        Failed to load video feed. Please ensure your webcam is connected and browser permissions are granted.
-                    </div>
-                </div>
+        <div class="gesture-guide">
+          <div class="gesture-card">
+            <img
+              src="{{ url_for('static', filename='images/rock.png') }}"
+              alt="Rock gesture"
+              class="gesture-icon"
+            />
+            <h3>Rock</h3>
+            <p>Make a fist with your hand</p>
+          </div>
+          <div class="gesture-card">
+            <img
+              src="{{ url_for('static', filename='images/paper.png') }}"
+              alt="Paper gesture"
+              class="gesture-icon"
+            />
+            <h3>Paper</h3>
+            <p>Show an open hand with fingers extended</p>
+          </div>
+          <div class="gesture-card">
+            <img
+              src="{{ url_for('static', filename='images/scissor.png') }}"
+              alt="Scissors gesture"
+              class="gesture-icon"
+            />
+            <h3>Scissor</h3>
+            <p>Show two fingers (index and middle)</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="game-section">
+        <div class="video-panel">
+          <div class="video-container">
+            <img
+              src="{{ url_for('video_feed') }}"
+              alt="Video Feed"
+              id="video-feed"
+            />
+            <div class="spinner" id="loading-spinner"></div>
+            <div id="error-message" style="display: none">
+              Failed to load video feed. Please ensure your webcam is connected
+              and browser permissions are granted.
             </div>
-            
-            <div class="info-panel">
-                <div class="scoreboard">
-                    <div class="score-box player-score">
-                        <h3>You</h3>
-                        <div class="score-value" id="player-score">0</div>
-                    </div>
-                    <div class="score-box computer-score">
-                        <h3>Computer</h3>
-                        <div class="score-value" id="computer-score">0</div>
-                    </div>
-                </div>
-                
-                <div class="countdown-display">
-                    <h3>Ready in</h3>
-                    <div class="countdown-value" id="countdown">3</div>
-                </div>
-                
-                <div class="game-result" id="game-result">
-                    <div class="result-text" id="result-text">Get ready to play!</div>
-                </div>
-                
-                <div class="choices-display">
-                    <div class="choice-box">
-                        <h4>Your Choice</h4>
-                        <div class="choice-icon" id="player-choice-icon">❓</div>
-                        <div class="choice-label" id="player-choice">Waiting...</div>
-                    </div>
-                    <div class="choice-box">
-                        <h4>Computer's Choice</h4>
-                        <div class="choice-icon" id="computer-choice-icon">❓</div>
-                        <div class="choice-label" id="computer-choice">Waiting...</div>
-                    </div>
-                </div>
-            </div>
+          </div>
+          <button id="play-button" class="play-button">PLAY</button>
         </div>
 
-        <section class="game-history">
-            <h2><i class="fas fa-history"></i> Game History</h2>
-            <div class="history-list" id="history-list">
-              
-                <div id="game-history"></div>
-              </div>
-          </section>
-
-        <div class="debug-panel">
-            <h3>Image Processing Steps</h3>
-            <div class="debug-images" id="debug-images">
-                <!-- Debug images will be dynamically added here -->
+        <div class="info-panel">
+          <div class="scoreboard">
+            <div class="score-box player-score">
+              <h3>You</h3>
+              <div class="score-value" id="player-score">0</div>
             </div>
-        </div>
+            <div class="score-box computer-score">
+              <h3>Computer</h3>
+              <div class="score-value" id="computer-score">0</div>
+            </div>
+          </div>
 
-        <div class="extension-notice">
-            <h3>Coming Soon!</h3>
-            <p>Rock, Paper, Scissors, Lizard, Spock extension from The Big Bang Theory!</p>
-        </div>
+          <div class="game-result" id="game-result">
+            <div class="result-text" id="result-text">Click PLAY to start!</div>
+          </div>
 
-        <footer>
-            <p>Rock Paper Scissors Game - Image Processing Project</p>
-        </footer>
+          <div class="choices-display">
+            <div class="choice-box">
+              <h4>Your Choice</h4>
+              <div class="choice-icon" id="player-choice-icon">❓</div>
+              <div class="choice-label" id="player-choice">Waiting...</div>
+            </div>
+            <div class="choice-box">
+              <h4>Computer's Choice</h4>
+              <div class="choice-icon" id="computer-choice-icon">❓</div>
+              <div class="choice-label" id="computer-choice">Waiting...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="game-history">
+        <h2><i class="fas fa-history"></i> Game History</h2>
+        <div class="history-list" id="history-list"></div>
+      </section>
+
+      <div class="debug-panel">
+        <h3>Image Processing Steps</h3>
+        <div class="debug-images" id="debug-images"></div>
+      </div>
+
+      <footer>
+        <p>Rock Paper Scissors Game - Image Processing Project</p>
+      </footer>
     </div>
 
     <script>
-        // DOM Elements
-        const videoFeed = document.getElementById('video-feed');
-        const errorMessage = document.getElementById('error-message');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const playerScoreElement = document.getElementById('player-score');
-        const computerScoreElement = document.getElementById('computer-score');
-        const countdownElement = document.getElementById('countdown');
-        const resultText = document.getElementById('result-text');
-        const gameResult = document.getElementById('game-result');
-        const playerChoiceIcon = document.getElementById('player-choice-icon');
-        const computerChoiceIcon = document.getElementById('computer-choice-icon');
-        const playerChoiceLabel = document.getElementById('player-choice');
-        const computerChoiceLabel = document.getElementById('computer-choice');
-        const historyList = document.getElementById('history-list');
-        const debugImages = document.getElementById('debug-images');
+      const videoFeed = document.getElementById("video-feed");
+      const errorMessage = document.getElementById("error-message");
+      const loadingSpinner = document.getElementById("loading-spinner");
+      const playerScoreElement = document.getElementById("player-score");
+      const computerScoreElement = document.getElementById("computer-score");
+      const resultText = document.getElementById("result-text");
+      const gameResult = document.getElementById("game-result");
+      const playerChoiceIcon = document.getElementById("player-choice-icon");
+      const computerChoiceIcon = document.getElementById(
+        "computer-choice-icon"
+      );
+      const playerChoiceLabel = document.getElementById("player-choice");
+      const computerChoiceLabel = document.getElementById("computer-choice");
+      const historyList = document.getElementById("history-list");
+      const debugImages = document.getElementById("debug-images");
+      const playButton = document.getElementById("play-button");
 
-        // Game state
-        let playerScore = 0;
-        let computerScore = 0;
-        
-        // Choice icons mapping
-        const choiceIcons = {
-            'rock': '✊',
-            'paper': '✋',
-            'scissors': '✌️',
-            'waiting': '❓'
-        };
+      const choiceIcons = {
+        rock: "✊",
+        paper: "✋",
+        scissors: "✌️",
+        waiting: "❓",
+      };
 
-        // Handle video loading
-        videoFeed.onload = function() {
-            loadingSpinner.style.display = 'none';
-        };
+      videoFeed.onload = () => (loadingSpinner.style.display = "none");
+      videoFeed.onerror = () => {
+        errorMessage.style.display = "block";
+        loadingSpinner.style.display = "none";
+        videoFeed.style.display = "none";
+      };
 
-        videoFeed.onerror = function() {
-            errorMessage.style.display = 'block';
-            loadingSpinner.style.display = 'none';
-            videoFeed.style.display = 'none';
-        };
+      function startGame() {
+        fetch("/play_game", { method: "POST" })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              resultText.textContent = "Show your gesture in the green box!";
+              updateChoices("waiting", "waiting");
+              playButton.disabled = true;
+              setTimeout(() => pollGameState(), 500);
+            }
+          })
+          .catch((error) => console.error("Error starting game:", error));
+      }
 
-        // Function to update the game state
-        function updateGameState() {
-            // This function would ideally receive updates from the backend
-            // For demonstration, we'll simulate with WebSocket or periodic fetch
-            // For now, we'll leave this as a placeholder for future implementation
+      function updateChoices(playerChoice, computerChoice) {
+        playerChoiceIcon.textContent =
+          choiceIcons[playerChoice] || choiceIcons.waiting;
+        computerChoiceIcon.textContent =
+          choiceIcons[computerChoice] || choiceIcons.waiting;
+
+        playerChoiceLabel.textContent = playerChoice
+          ? playerChoice.charAt(0).toUpperCase() + playerChoice.slice(1)
+          : "Waiting...";
+        computerChoiceLabel.textContent = computerChoice
+          ? computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1)
+          : "Waiting...";
+      }
+
+      function displayResult(result, playerChoice, computerChoice) {
+        gameResult.className = "game-result animated";
+
+        if (result.includes("Win!")) {
+          resultText.style.color = "#4CAF50";
+        } else if (result.includes("Computer Wins!")) {
+          resultText.style.color = "#F44336";
+        } else {
+          resultText.style.color = "#2196F3";
         }
 
-        // Function to update the history
-        function addHistoryItem(playerChoice, computerChoice, result) {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            
-            let resultClass = '';
-            if (result.includes('Win')) {
-                resultClass = 'history-result-win';
-            } else if (result.includes('Computer')) {
-                resultClass = 'history-result-lose';
-            } else {
-                resultClass = 'history-result-draw';
+        resultText.textContent = result;
+        updateChoices(playerChoice, computerChoice);
+
+        setTimeout(() => {
+          gameResult.classList.remove("animated");
+          playButton.disabled = false;
+        }, 500);
+      }
+
+      function updateHistory(history) {
+        historyList.innerHTML = "";
+
+        if (history.length === 0) {
+          const emptyMessage = document.createElement("div");
+          emptyMessage.className = "history-empty";
+          emptyMessage.textContent =
+            "No games played yet. Click PLAY to start!";
+          historyList.appendChild(emptyMessage);
+          return;
+        }
+
+        history.forEach((item) => {
+          const parts = item.split(", ");
+          if (parts.length >= 3) {
+            const playerChoice = parts[0].replace("You: ", "");
+            const computerChoice = parts[1].replace("Comp: ", "");
+            const result = parts[2];
+
+            const historyItem = document.createElement("div");
+            historyItem.className = "history-item";
+
+            let resultClass = "history-result-draw";
+            if (result.includes("Win!")) {
+              resultClass = "history-result-win";
+            } else if (result.includes("Computer Wins!")) {
+              resultClass = "history-result-lose";
             }
-            
+
             historyItem.innerHTML = `
-                <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
-                <span class="${resultClass}">${result}</span>
-            `;
-            
-            historyList.insertBefore(historyItem, historyList.firstChild);
-            
-            // Limit history items
-            if (historyList.children.length > 5) {
-                historyList.removeChild(historyList.lastChild);
+                        <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
+                        <span class="${resultClass}">${result}</span>
+                    `;
+
+            historyList.appendChild(historyItem);
+          }
+        });
+      }
+
+      function pollGameState() {
+        fetch("/game_state")
+          .then((response) => response.json())
+          .then((data) => {
+            playerScoreElement.textContent = data.player_score;
+            computerScoreElement.textContent = data.computer_score;
+
+            if (
+              data.showing_result &&
+              data.player_choice &&
+              data.computer_choice
+            ) {
+              displayResult(
+                data.result,
+                data.player_choice,
+                data.computer_choice
+              );
+            } else if (data.waiting_for_gesture) {
+              resultText.textContent = "Show your gesture in the green box!";
+              updateChoices("waiting", "waiting");
+              setTimeout(() => pollGameState(), 500);
+            } else if (data.waiting_for_play) {
+              resultText.textContent = "Click PLAY to start!";
+              playButton.disabled = false;
             }
-        }
 
-        // Function to display the result with animation
-        function displayResult(result) {
-            gameResult.className = 'game-result animated';
-            
-            if (result.includes('Win')) {
-                gameResult.classList.add('highlight');
-                resultText.style.color = 'var(--secondary-color)';
-            } else if (result.includes('Computer')) {
-                resultText.style.color = 'var(--accent-color)';
-            } else {
-                resultText.style.color = 'var(--highlight-color)';
+            updateHistory(data.history);
+          })
+          .catch((error) => {
+            console.error("Error polling game state:", error);
+            setTimeout(() => pollGameState(), 1000);
+          });
+      }
+
+      function fetchDebugImages() {
+        fetch("/debug_images")
+          .then((response) => response.json())
+          .then((data) => {
+            debugImages.innerHTML = "";
+
+            for (const [name, base64Image] of Object.entries(data)) {
+              const imgContainer = document.createElement("div");
+              imgContainer.className = "debug-image-container";
+
+              const img = document.createElement("img");
+              img.className = "debug-image";
+              img.src = `data:image/jpeg;base64,${base64Image}`;
+              img.alt = name;
+
+              const label = document.createElement("div");
+              label.className = "debug-image-label";
+              label.textContent = name;
+
+              imgContainer.appendChild(img);
+              imgContainer.appendChild(label);
+              debugImages.appendChild(imgContainer);
             }
-            
-            resultText.textContent = result;
-            
-            setTimeout(() => {
-                gameResult.classList.remove('animated');
-            }, 500);
-        }
+          })
+          .catch((error) =>
+            console.error("Error fetching debug images:", error)
+          );
+      }
 
-        // Function to update choices display
-        function updateChoices(playerChoice, computerChoice) {
-            playerChoiceIcon.textContent = choiceIcons[playerChoice] || choiceIcons.waiting;
-            computerChoiceIcon.textContent = choiceIcons[computerChoice] || choiceIcons.waiting;
-            
-            playerChoiceLabel.textContent = playerChoice ? playerChoice.charAt(0).toUpperCase() + playerChoice.slice(1) : 'Waiting...';
-            computerChoiceLabel.textContent = computerChoice ? computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1) : 'Waiting...';
-        }
+      function initGame() {
+        updateChoices("waiting", "waiting");
+        setInterval(fetchDebugImages, 1000);
+        pollGameState();
+      }
 
-        // Function to update debug images
-        function updateDebugImages(images) {
-            // This would be populated with actual debug images from the backend
-            // For now we'll leave it empty
-        }
-        
-        // Function to poll for game state updates
-        function pollGameState() {
-            fetch('/game_state')
-                .then(response => response.json())
-                .then(data => {
-                    // Update scores
-                    playerScoreElement.textContent = data.player_score;
-                    computerScoreElement.textContent = data.computer_score;
-                    
-                    // Update countdown
-                    countdownElement.textContent = data.countdown;
-                    
-                    // Update choices if available
-                    if (data.player_choice && data.computer_choice) {
-                        updateChoices(data.player_choice, data.computer_choice);
-                    }
-                    
-                    // Update result if available
-                    if (data.result) {
-                        displayResult(data.result);
-                    }
-                    
-                    // Update history
-                    if (data.history && data.history.length > 0) {
-                        // Clear current history first
-                        while (historyList.firstChild) {
-                            historyList.removeChild(historyList.firstChild);
-                        }
-                        
-                        // Add history items
-                        data.history.forEach(item => {
-                            const parts = item.split(', ');
-                            if (parts.length >= 3) {
-                                const playerChoice = parts[0].replace('You: ', '');
-                                const computerChoice = parts[1].replace('Comp: ', '');
-                                const result = parts[2];
-                                
-                                const historyItem = document.createElement('div');
-                                historyItem.className = 'history-item';
-                                
-                                let resultClass = '';
-                                if (result.includes('Win')) {
-                                    resultClass = 'history-result-win';
-                                } else if (result.includes('Computer')) {
-                                    resultClass = 'history-result-lose';
-                                } else {
-                                    resultClass = 'history-result-draw';
-                                }
-                                
-                                historyItem.innerHTML = `
-                                    <span>You: ${playerChoice} vs Computer: ${computerChoice}</span>
-                                    <span class="${resultClass}">${result}</span>
-                                `;
-                                
-                                historyList.appendChild(historyItem);
-                            }
-                        });
-                    }
-                })
-                .catch(error => console.error('Error polling game state:', error));
-        }
-        
-        // Function to fetch and display debug images
-        function fetchDebugImages() {
-            fetch('/debug_images')
-                .then(response => response.json())
-                .then(data => {
-                    // Clear current debug images
-                    debugImages.innerHTML = '';
-                    
-                    // Add each debug image
-                    for (const [name, base64Image] of Object.entries(data)) {
-                        const imgContainer = document.createElement('div');
-                        imgContainer.className = 'debug-image-container';
-                        
-                        const img = document.createElement('img');
-                        img.className = 'debug-image';
-                        img.src = `data:image/jpeg;base64,${base64Image}`;
-                        img.alt = name;
-                        
-                        const label = document.createElement('div');
-                        label.className = 'debug-image-label';
-                        label.textContent = name;
-                        
-                        imgContainer.appendChild(img);
-                        imgContainer.appendChild(label);
-                        debugImages.appendChild(imgContainer);
-                    }
-                })
-                .catch(error => console.error('Error fetching debug images:', error));
-        }
-
-        function fetchGameHistory() {
-    try {
-        fetch('/game_history')
-            .then(response => response.json())
-            .then(data => {
-                if (data.history) {
-                    const historyElement = document.getElementById('game-history');
-                    historyElement.innerHTML = '<h3>Game History</h3>';
-
-                    data.history.forEach(entry => {
-                        const historyItem = document.createElement('p');
-                        historyItem.textContent = entry;
-                        historyElement.appendChild(historyItem);
-                    });
-                } else {
-                    console.error('Error fetching game history:', data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-setInterval(fetchGameHistory, 5000); // Fetch every 5 seconds
-        
-        // Initialize the game
-        function initGame() {
-            // Initial setup
-            updateChoices('waiting', 'waiting');
-            
-            // Start polling for game state and debug images
-            setInterval(pollGameState, 500);
-            setInterval(fetchDebugImages, 1000);
-        }
-        
-        // Call init when document is ready
-        document.addEventListener('DOMContentLoaded', initGame);
+      playButton.addEventListener("click", startGame);
+      document.addEventListener("DOMContentLoaded", initGame);
     </script>
-</body>
+  </body>
 </html>
