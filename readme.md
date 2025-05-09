@@ -32,6 +32,17 @@ Follow these steps to set up and run the application on your local machine.
 
 ---
 
+## 🎥 Video Preview
+
+Watch a quick demo of the game in action!  
+![Game Demo](/media/output.gif)
+
+*Click [here](https://www.youtube.com/watch?v=your-video-id) to watch the full video on YouTube (if available).*
+
+*Alternative Link*: If the GIF doesn’t load, you can download the video directly from [media/game-demo.mp4](media/game-demo.mp4).
+
+---
+
 ## 🛠️ Setting Up and Running the CGV GAME Application
 
 1. **Clone the Repository**
