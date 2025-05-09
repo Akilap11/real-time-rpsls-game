@@ -35,7 +35,8 @@ Follow these steps to set up and run the application on your local machine.
 ## 🎥 Video Preview
 
 Watch a quick demo of the game in action!  
-![Game Demo](/media/output.gif)
+![Game Demo 1](/media/output.gif) <br><br><br>
+![Game Demo 2](/media/output2.gif)
 
 *Click [here](https://www.youtube.com/watch?v=your-video-id) to watch the full video on YouTube (if available).*
 
