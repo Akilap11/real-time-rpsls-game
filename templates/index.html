@@ -20,6 +20,14 @@
         <h3>Show your gesture in the camera when ready!</h3>
       </header>
 
+      <section class="parallax-section">
+        <img
+          src="{{ url_for('static', filename='images/parallax1.svg') }}"
+          class="parallax-image"
+          alt="Parallax 1"
+        />
+      </section>
+
       <section class="instructions">
         <h2><i class="fas fa-book"></i> How to Play</h2>
         <p>
@@ -29,31 +37,29 @@
 
         <div class="gesture-guide">
           <div class="gesture-card">
-            <img
-              src="{{ url_for('static', filename='images/rock.png') }}"
-              alt="Rock gesture"
-              class="gesture-icon"
-            />
+            <div class="gesture-emoji">✊</div>
             <h3>Rock</h3>
             <p>Make a fist with your hand</p>
           </div>
           <div class="gesture-card">
-            <img
-              src="{{ url_for('static', filename='images/paper.png') }}"
-              alt="Paper gesture"
-              class="gesture-icon"
-            />
+            <div class="gesture-emoji">✋</div>
             <h3>Paper</h3>
             <p>Show an open hand with fingers extended</p>
           </div>
           <div class="gesture-card">
-            <img
-              src="{{ url_for('static', filename='images/scissor.png') }}"
-              alt="Scissors gesture"
-              class="gesture-icon"
-            />
+            <div class="gesture-emoji">✌️</div>
             <h3>Scissor</h3>
             <p>Show two fingers (index and middle)</p>
+          </div>
+          <div class="gesture-card">
+            <div class="gesture-emoji">🤙</div>
+            <h3>Lizard</h3>
+            <p>Make a “hang-loose” with thumb and pinky</p>
+          </div>
+          <div class="gesture-card">
+            <div class="gesture-emoji">🖖</div>
+            <h3>Spock</h3>
+            <p>Separate middle and ring fingers in Vulcan salute</p>
           </div>
         </div>
       </section>
@@ -105,6 +111,14 @@
           </div>
         </div>
       </div>
+
+      <section class="parallax-section">
+        <img
+          src="{{ url_for('static', filename='images/parallax2.svg') }}"
+          class="parallax-image"
+          alt="Parallax 2"
+        />
+      </section>
 
       <section class="game-history">
         <h2><i class="fas fa-history"></i> Game History</h2>
@@ -313,4 +327,14 @@
       document.addEventListener("DOMContentLoaded", initGame);
     </script>
   </body>
+
+  <script>
+    window.addEventListener("scroll", () => {
+      document.querySelectorAll(".parallax-image").forEach((img) => {
+        const speed = 0.3;
+        const offset = window.scrollY - img.parentElement.offsetTop;
+        img.style.transform = `translate(-50%, ${offset * speed}px)`;
+      });
+    });
+  </script>
 </html>
