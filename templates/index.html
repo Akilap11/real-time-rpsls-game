@@ -157,6 +157,8 @@
         rock: "✊",
         paper: "✋",
         scissors: "✌️",
+        lizard: "🤙",
+        spock: "🖖",
         waiting: "❓",
       };
 
@@ -326,15 +328,14 @@
       playButton.addEventListener("click", startGame);
       document.addEventListener("DOMContentLoaded", initGame);
     </script>
-  </body>
-
-  <script>
-    window.addEventListener("scroll", () => {
-      document.querySelectorAll(".parallax-image").forEach((img) => {
-        const speed = 0.3;
-        const offset = window.scrollY - img.parentElement.offsetTop;
-        img.style.transform = `translate(-50%, ${offset * speed}px)`;
+    <script>
+      window.addEventListener("scroll", () => {
+        document.querySelectorAll(".parallax-image").forEach((img) => {
+          const speed = 0.3;
+          const offset = window.scrollY - img.parentElement.offsetTop;
+          img.style.transform = `translate(-50%, ${offset * speed}px)`;
+        });
       });
-    });
-  </script>
+    </script>
+  </body>
 </html>
