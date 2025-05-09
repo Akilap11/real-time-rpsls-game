@@ -1,8 +1,9 @@
 from flask import Flask, render_template, Response, jsonify
-from game_logic import RockPaperScissors
 import logging
 import threading
 import time
+
+from game_logic import RockPaperScissors
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
